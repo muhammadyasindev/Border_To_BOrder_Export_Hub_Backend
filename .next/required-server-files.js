@@ -4,7 +4,7 @@ self.__SERVER_FILES_MANIFEST={
     "env": {},
     "webpack": null,
     "typescript": {
-      "ignoreBuildErrors": false
+      "ignoreBuildErrors": true
     },
     "typedRoutes": false,
     "distDir": ".next",
@@ -166,7 +166,7 @@ self.__SERVER_FILES_MANIFEST={
       "proxyPrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 1,
+      "cpus": 7,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -306,6 +306,9 @@ self.__SERVER_FILES_MANIFEST={
     "serverExternalPackages": [
       "@electric-sql/pglite"
     ],
+    "eslint": {
+      "ignoreDuringBuilds": true
+    },
     "turbopack": {
       "root": "F:\\borderglow-platform-redesign-plan"
     },

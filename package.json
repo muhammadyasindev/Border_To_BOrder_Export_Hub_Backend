@@ -9,27 +9,25 @@
     "typecheck": "tsc --noEmit",
     "test:security": "node tests/security-integration.test.mjs",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "node -e \"if (process.env.USE_POSTGRES === 'true' && process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('127.0.0.1')) { require('child_process').execSync('npx drizzle-kit migrate', { stdio: 'inherit' }); } else { console.log('Skipping remote migration: hosted Postgres not configured.'); }\""
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@types/bcryptjs": "^2.4.6",
+    "@types/node": "22.19.15",
     "@types/nodemailer": "^8.0.2",
+    "@types/pg": "8.18.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "bcryptjs": "^3.0.3",
     "dotenv": "17.3.1",
+    "drizzle-kit": "0.31.10",
     "drizzle-orm": "0.45.2",
     "next": "16.2.6",
     "nodemailer": "^10.1.0",
     "pg": "8.20.0",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
-  },
-  "devDependencies": {
-    "@types/node": "22.19.15",
-    "@types/pg": "8.18.0",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
-    "drizzle-kit": "0.31.10",
+    "react-dom": "19.2.6",
     "typescript": "5.9.3"
   }
 }
