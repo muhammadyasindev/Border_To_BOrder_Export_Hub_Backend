@@ -38,6 +38,8 @@ services:
         value: /var/data/attachments
       - key: SESSION_SECRET
         generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
       - key: COMPLIANCE_SIGNING_SECRET
         generateValue: true
       - key: ALLOW_PRODUCTION_SEED

@@ -13,7 +13,7 @@ const MAX_SESSION_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 let ephemeralProductionSecret: string | null = null;
 
 export function getSessionSecret(): string {
-  const secret = process.env.SESSION_SECRET;
+  const secret = process.env.SESSION_SECRET || process.env.JWT_SECRET;
   const isProduction = process.env.NODE_ENV === "production" || (process.env.NODE_ENV as string) === "staging";
 
   if (secret && secret.length >= 32 && !secret.includes("default") && !secret.includes("example") && !secret.includes("borderglow_hmac_secret_key_prod")) {

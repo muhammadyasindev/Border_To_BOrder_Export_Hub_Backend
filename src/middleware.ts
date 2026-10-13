@@ -2,22 +2,29 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const origin = request.headers.get("origin") || "";
-  const allowedOriginsEnv = process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || "";
+  const rawOrigin = (request.headers.get("origin") || "").trim();
+  const origin = rawOrigin.replace(/\/+$/, "");
+
+  const allowedOriginsEnv =
+    process.env.ALLOWED_ORIGINS ||
+    process.env.FRONTEND_URL ||
+    "https://border-to-border-export-frontend.vercel.app";
+
   const allowedList = allowedOriginsEnv
     .split(",")
-    .map((o) => o.trim())
+    .map((o) => o.trim().replace(/\/+$/, ""))
     .filter(Boolean);
 
-  // In development, default allow localhost origins if not specified
+  // In development or if vercel domain, allow dynamically
   const isDev = process.env.NODE_ENV !== "production";
   const isAllowed =
     !origin ||
     allowedList.includes(origin) ||
     allowedList.includes("*") ||
+    origin.endsWith(".vercel.app") ||
     (isDev && (origin.includes("localhost") || origin.includes("127.0.0.1")));
 
-  const effectiveOrigin = isAllowed && origin ? origin : allowedList[0] || "*";
+  const effectiveOrigin = isAllowed && origin ? origin : (allowedList[0] || "*");
 
   // Preflight response
   if (request.method === "OPTIONS") {

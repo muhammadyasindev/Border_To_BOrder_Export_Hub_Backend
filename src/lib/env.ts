@@ -20,10 +20,10 @@ export function validateEnvironment(): EnvValidationResult {
   const usePostgres = process.env.USE_POSTGRES === "true";
 
   // 1. Session secret validation
-  const sessionSecret = process.env.SESSION_SECRET;
+  const sessionSecret = process.env.SESSION_SECRET || process.env.JWT_SECRET;
   if (!sessionSecret) {
     if (isProduction) {
-      warnings.push("SESSION_SECRET is not configured in production environment. An ephemeral runtime secret has been generated to keep the server operational; set SESSION_SECRET (32+ chars) in dashboard for persistent sessions across restarts.");
+      warnings.push("SESSION_SECRET or JWT_SECRET is not configured in production environment. An ephemeral runtime secret has been generated to keep the server operational; set SESSION_SECRET (32+ chars) in dashboard for persistent sessions across restarts.");
     } else {
       warnings.push("SESSION_SECRET is not configured; using local dev secret.");
     }
