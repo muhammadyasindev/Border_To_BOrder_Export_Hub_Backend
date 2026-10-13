@@ -60,6 +60,19 @@ app.use(cookieParser());
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 
+// Root Welcome & Health Status
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "BorderGlow Express API Engine",
+    version: "2.0.0",
+    healthCheck: "/api/health",
+    frontendUrl: env.FRONTEND_URL,
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  });
+});
+
 // Health Check
 app.get("/api/health", (req, res) => {
   res.json({
