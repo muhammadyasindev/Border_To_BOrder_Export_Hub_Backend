@@ -29,6 +29,8 @@ if (isExplicitPostgres) {
     new Pool({
       connectionString: databaseUrl,
       ssl: isLocalDb ? false : { rejectUnauthorized: false },
+      connectionTimeoutMillis: 5000,
+      idleTimeoutMillis: 30000,
     });
 
   pool.on("error", (err) => {

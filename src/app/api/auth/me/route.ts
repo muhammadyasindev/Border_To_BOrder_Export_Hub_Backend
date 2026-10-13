@@ -5,11 +5,13 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET() {
-  const user = await getCurrentUser();
-  if (!user) {
+  try {
+    const user = await getCurrentUser();
+    return NextResponse.json({ user: user || null });
+  } catch (error: any) {
+    console.error("Error in /api/auth/me:", error?.message || error);
     return NextResponse.json({ user: null });
   }
-  return NextResponse.json({ user });
 }
 
 export async function POST(req: Request) {
