@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next build",
-    "start": "next start",
+    "start": "next start -H 0.0.0.0",
     "typecheck": "tsc --noEmit",
     "test:security": "node tests/security-integration.test.mjs",
     "db:generate": "drizzle-kit generate",

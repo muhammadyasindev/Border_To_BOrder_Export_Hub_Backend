@@ -17,7 +17,7 @@ services:
     region: frankfurt
     buildCommand: npm ci && npm run build
     preDeployCommand: npm run db:migrate
-    startCommand: npm run db:migrate && npm run start
+    startCommand: npm run start
     healthCheckPath: /api/health
     disk:
       name: borderglow-attachments

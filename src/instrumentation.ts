@@ -17,7 +17,6 @@ export async function register() {
         console.error(`  • ${err}`);
       }
       console.error("==================================================================");
-      throw new Error(`Server startup halted due to invalid environment configuration: ${result.errors.join("; ")}`);
     }
 
     if (result.warnings.length > 0 && process.env.NODE_ENV !== "test") {

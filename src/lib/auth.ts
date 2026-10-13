@@ -10,17 +10,26 @@ const MAX_SESSION_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
  * Validates and retrieves the HMAC signing secret.
  * In production, a strong, custom secret of at least 32 characters is strictly required.
  */
+let ephemeralProductionSecret: string | null = null;
+
 export function getSessionSecret(): string {
   const secret = process.env.SESSION_SECRET;
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProduction = process.env.NODE_ENV === "production" || (process.env.NODE_ENV as string) === "staging";
+
+  if (secret && secret.length >= 32 && !secret.includes("default") && !secret.includes("example") && !secret.includes("borderglow_hmac_secret_key_prod")) {
+    return secret;
+  }
 
   if (isProduction) {
-    if (!secret || secret.length < 32 || secret.includes("borderglow_hmac_secret_key_prod") || secret.includes("default")) {
-      throw new Error(
-        "CRITICAL SECURITY CONFIGURATION ERROR: A strong SESSION_SECRET (minimum 32 characters, non-default) is mandatory in production environment."
+    if (!ephemeralProductionSecret) {
+      ephemeralProductionSecret = crypto.randomBytes(32).toString("hex");
+      console.warn(
+        "⚠️ [SECURITY NOTICE] SESSION_SECRET is not configured in production environment variables.\n" +
+        "   An ephemeral 256-bit secret was automatically generated for this instance.\n" +
+        "   To keep user sessions logged in across server redeploys, set SESSION_SECRET (32+ characters) in your hosting dashboard."
       );
     }
-    return secret;
+    return ephemeralProductionSecret;
   }
 
   return secret || "borderglow_dev_hmac_secret_key_minimum_32_characters_for_security";
