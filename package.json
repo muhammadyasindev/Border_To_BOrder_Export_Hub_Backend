@@ -1,33 +1,27 @@
 {
   "name": "borderglow-backend",
-  "version": "1.0.0",
-  "private": true,
+  "version": "2.0.0",
+  "description": "BorderGlow Trade & Transport Express.js API Engine with MongoDB",
+  "main": "src/server.js",
+  "type": "module",
   "scripts": {
-    "dev": "next dev -p 3001",
-    "build": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next build",
-    "start": "next start -H 0.0.0.0",
-    "typecheck": "tsc --noEmit",
-    "test:security": "node tests/security-integration.test.mjs",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "node -e \"if (process.env.USE_POSTGRES === 'true' && process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('127.0.0.1')) { require('child_process').execSync('npx drizzle-kit migrate', { stdio: 'inherit' }); } else { console.log('Skipping remote migration: hosted Postgres not configured.'); }\""
+    "build": "echo 'Backend build ready'",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node -e \"import('./src/config/db.js').then(m => m.connectDB()).then(() => import('./src/services/seedService.js')).then(m => m.seedDatabase()).then(() => process.exit(0))\""
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.5.8",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "22.19.15",
-    "@types/nodemailer": "^8.0.2",
-    "@types/pg": "8.18.0",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
-    "bcryptjs": "^3.0.3",
-    "dotenv": "17.3.1",
-    "drizzle-kit": "0.31.10",
-    "drizzle-orm": "0.45.2",
-    "next": "16.2.6",
-    "nodemailer": "^10.1.0",
-    "pg": "8.20.0",
-    "react": "19.2.6",
-    "react-dom": "19.2.6",
-    "typescript": "5.9.3"
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

@@ -1,3 +1,0 @@
-module.exports=[69967,(a,b,c)=>{}];
-
-//# sourceMappingURL=backend__next-internal_server_app__not-found_page_actions_0vsb8.t.js.map

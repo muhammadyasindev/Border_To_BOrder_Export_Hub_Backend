@@ -1,5 +1,5 @@
 # ==============================================================================
-# BORDERGLOW BACKEND — RENDER BLUEPRINT
+# BORDERGLOW EXPRESS + MONGODB BACKEND — RENDER BLUEPRINT
 # ==============================================================================
 
 services:
@@ -8,8 +8,7 @@ services:
     runtime: node
     plan: starter
     region: frankfurt
-    buildCommand: npm install && npm run build
-    preDeployCommand: npm run db:migrate
+    buildCommand: npm install
     startCommand: npm run start
     healthCheckPath: /api/health
     envVars:
@@ -17,39 +16,31 @@ services:
         value: production
       - key: PORT
         value: 10000
-      - key: USE_POSTGRES
-        value: "true"
-      - key: DATABASE_URL
+      - key: MONGODB_URI
         sync: false
-      - key: ATTACHMENT_STORAGE_DIR
-        value: ./data/attachments
       - key: SESSION_SECRET
         generateValue: true
       - key: JWT_SECRET
         generateValue: true
-      - key: COMPLIANCE_SIGNING_SECRET
-        generateValue: true
-      - key: ALLOW_PRODUCTION_SEED
-        value: "false"
-      - key: COOKIE_SAME_SITE
-        value: "lax"
       - key: FRONTEND_URL
-        sync: false
+        value: https://border-to-border-export-frontend.vercel.app
       - key: ALLOWED_ORIGINS
-        sync: false
-      - key: RESEND_API_KEY
-        sync: false
+        value: https://border-to-border-export-frontend.vercel.app,http://localhost:5173,http://localhost:3000
+      - key: COOKIE_SAME_SITE
+        value: none
+      - key: ATTACHMENT_STORAGE_DIR
+        value: ./data/attachments
       - key: SMTP_HOST
-        sync: false
+        value: smtp.gmail.com
       - key: SMTP_PORT
-        sync: false
+        value: 465
       - key: SMTP_USER
         sync: false
       - key: SMTP_PASS
         sync: false
       - key: EMAIL_FROM
-        value: BorderGlow Support <support@trade.borderglow.com>
-      - key: TURN_SERVER_URL
+        value: BorderGlow Verification <yasinsasoli186@gmail.com>
+      - key: RESEND_API_KEY
         sync: false
-      - key: TURN_SECRET
-        sync: false
+      - key: ALLOW_PRODUCTION_SEED
+        value: "false"
