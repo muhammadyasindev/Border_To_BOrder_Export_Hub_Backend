@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { db } from "@/db";
 import { users, passwordResets } from "@/db/schema";
 import { eq, and, gt } from "drizzle-orm";
+import { sendEmail } from "@/lib/email";
 
 // IP rate limit store: max 10 requests per 15 minutes per IP
 const ipRateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -21,64 +22,14 @@ function checkIpRateLimit(ip: string): boolean {
   return true;
 }
 
-async function dispatchEmailOtp(email: string, otp: string): Promise<{ success: boolean; error?: string }> {
-  const isProduction = process.env.NODE_ENV === "production";
-  const apiKey = process.env.RESEND_API_KEY;
-
-  if (isProduction && !apiKey) {
-    return { success: false, error: "Production email provider not configured" };
-  }
-
-  if (apiKey) {
-    try {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: process.env.FROM_EMAIL || "BorderGlow Security <no-reply@borderglow.trade>",
-          to: [email],
-          subject: "BorderGlow Single-Use Password Reset Code",
-          text: `Your BorderGlow verification code is: ${otp}\n\nThis single-use code expires in 15 minutes. If you did not request this code, please secure your account immediately.`,
-        }),
-      });
-      if (!res.ok) {
-        return { success: false, error: "Email provider rejected message" };
-      }
-      return { success: true };
-    } catch (e: any) {
-      console.error("Email dispatch failed:", e);
-      return { success: false, error: e.message || "Email dispatch failed" };
-    }
-  }
-
-  // Development/test audit log only - NEVER executed in production
-  if (!isProduction) {
-    console.log(`[DEV AUDIT] OTP for ${email}: ${otp} (Expires in 15m)`);
-  }
-  return { success: true };
-}
-
 export async function POST(req: Request) {
   try {
-    const isProduction = process.env.NODE_ENV === "production";
-
-    // 1. Production safety gate: fail safely if no real email provider is configured
-    if (isProduction && !process.env.RESEND_API_KEY) {
-      return NextResponse.json(
-        { error: "Password recovery service is temporarily unavailable. Email delivery provider is not configured." },
-        { status: 503 }
-      );
-    }
-
-    // 2. IP-based rate limiting
+    // 1. IP rate limiting
     const forwarded = req.headers.get("x-forwarded-for");
     const clientIp = forwarded ? forwarded.split(",")[0].trim() : "127.0.0.1";
     if (!checkIpRateLimit(clientIp)) {
       return NextResponse.json(
-        { error: "Too many password recovery requests from this IP. Please try again later." },
+        { error: "Too many password reset requests. Please wait a few minutes." },
         { status: 429 }
       );
     }
@@ -86,8 +37,9 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { email } = body;
 
-    if (!email || typeof email !== "string") {
-      return NextResponse.json({ error: "Email address is required" }, { status: 400 });
+    // 2. Strict input validation
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+      return NextResponse.json({ error: "A valid email address is required" }, { status: 400 });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -122,7 +74,29 @@ export async function POST(req: Request) {
           expiresAt,
         });
 
-        await dispatchEmailOtp(normalizedEmail, otp);
+        const emailResult = await sendEmail({
+          to: normalizedEmail,
+          subject: "BorderGlow Single-Use Password Reset Code",
+          text: `Your BorderGlow verification code is: ${otp}\n\nThis single-use code expires in 15 minutes. If you did not request this code, please secure your account immediately.`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0f172a; margin-bottom: 8px;">BorderGlow Password Recovery</h2>
+              <p style="color: #475569; font-size: 14px;">Use the following single-use verification code to reset your account password:</p>
+              <div style="background: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                <span style="font-size: 28px; font-weight: bold; letter-spacing: 6px; font-family: monospace; color: #2563eb;">${otp}</span>
+              </div>
+              <p style="color: #64748b; font-size: 12px;">This single-use code expires in 15 minutes. If you did not request this, please disregard this email.</p>
+            </div>
+          `,
+        });
+
+        if (!emailResult.success) {
+          console.error("Forgot-password email delivery failed:", emailResult.error);
+          return NextResponse.json(
+            { error: "Unable to dispatch verification code at this time. Please check mail server settings." },
+            { status: 503 }
+          );
+        }
       }
     }
 

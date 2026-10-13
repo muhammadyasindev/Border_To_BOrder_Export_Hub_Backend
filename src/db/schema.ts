@@ -172,6 +172,17 @@ export const passwordResets = pgTable("password_resets", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Email Verifications for User Registration with Single-Use OTP
+export const emailVerifications = pgTable("email_verifications", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  otpHash: text("otp_hash").notNull(),
+  attempts: integer("attempts").notNull().default(0),
+  expiresAt: timestamp("expires_at").notNull(),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Transport Bookings and Shipments
 export const shipments = pgTable("shipments", {
   id: serial("id").primaryKey(),

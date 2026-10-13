@@ -1,10 +1,10 @@
 var R=require("../../../../../chunks/[turbopack]_runtime.js")("server/app/api/admin/compliance/authorize/route.js")
-R.c("server/chunks/[root-of-the-server]__09_34m-._.js")
-R.c("server/chunks/node_modules_next_11synfn._.js")
-R.c("server/chunks/_0c6ko98._.js")
-R.c("server/chunks/_0q9d7lq._.js")
-R.c("server/chunks/[root-of-the-server]__0e6esfj._.js")
-R.c("server/chunks/[root-of-the-server]__0z41ncc._.js")
+R.c("server/chunks/[root-of-the-server]__0ilgsv3._.js")
+R.c("server/chunks/0it3_next_0xcvt1p._.js")
+R.c("server/chunks/backend_11xwwn.._.js")
+R.c("server/chunks/backend_0ixk64m._.js")
+R.c("server/chunks/[root-of-the-server]__0edrshl._.js")
+R.c("server/chunks/[root-of-the-server]__0nmxxuj._.js")
 R.c("server/chunks/0x-1__next-internal_server_app_api_admin_compliance_authorize_route_actions_0c3m71_.js")
-R.m(69783)
-module.exports=R.m(69783).exports
+R.m(32368)
+module.exports=R.m(32368).exports

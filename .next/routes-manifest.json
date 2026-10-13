@@ -111,6 +111,12 @@
       "namedRegex": "^/api/auth/register(?:/)?$"
     },
     {
+      "page": "/api/auth/register/send-otp",
+      "regex": "^/api/auth/register/send\\-otp(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/register/send\\-otp(?:/)?$"
+    },
+    {
       "page": "/api/auth/reset-password",
       "regex": "^/api/auth/reset\\-password(?:/)?$",
       "routeKeys": {},

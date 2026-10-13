@@ -4,9 +4,9 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 
 export async function seedDatabase() {
-  // Check if users already exist
-  const existingUsers = await db.select().from(users).limit(1);
-  if (existingUsers.length > 0) {
+  // Check if seed users already exist
+  const existingSeedUser = await db.select().from(users).where(eq(users.email, "yasinsasoli186@gmail.com")).limit(1);
+  if (existingSeedUser.length > 0) {
     return;
   }
 

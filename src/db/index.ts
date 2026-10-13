@@ -23,10 +23,12 @@ const isExplicitPostgres =
 let dbInstance: any;
 
 if (isExplicitPostgres) {
+  const isLocalDb = databaseUrl ? (databaseUrl.includes("127.0.0.1") || databaseUrl.includes("localhost")) : true;
   const pool =
     globalForDb.__borderglowPool ??
     new Pool({
       connectionString: databaseUrl,
+      ssl: isLocalDb ? false : { rejectUnauthorized: false },
     });
 
   pool.on("error", (err) => {
@@ -79,6 +81,15 @@ if (isExplicitPostgres) {
           ALTER TABLE "messages" ADD COLUMN IF NOT EXISTS "voice_duration" numeric;
           ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "sessions_revoked_at" timestamp;
           CREATE TABLE IF NOT EXISTS "password_resets" (
+            "id" serial PRIMARY KEY,
+            "email" text NOT NULL,
+            "otp_hash" text NOT NULL,
+            "attempts" integer DEFAULT 0 NOT NULL,
+            "expires_at" timestamp NOT NULL,
+            "used_at" timestamp,
+            "created_at" timestamp DEFAULT now() NOT NULL
+          );
+          CREATE TABLE IF NOT EXISTS "email_verifications" (
             "id" serial PRIMARY KEY,
             "email" text NOT NULL,
             "otp_hash" text NOT NULL,

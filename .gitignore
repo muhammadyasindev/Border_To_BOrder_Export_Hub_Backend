@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing and Coverage
+/coverage
+tests/results/
+
+# Next.js Build Output
+.next/
+out/
+build/
+dist/
+
+# TypeScript Cache
+*.tsbuildinfo
+next-env.d.ts
+
+# Production and Local Environment Secrets
+.env
+.env*.local
+.env.staging
+.env.production
+!.env.example
+
+# Local Database & Attachments Storage
+/data/
+/borderglow.db/
+*.db
+*.sqlite
+*.pid
+
+# Debug & Task Logs
+*.log
+
+# OS & Editor Metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

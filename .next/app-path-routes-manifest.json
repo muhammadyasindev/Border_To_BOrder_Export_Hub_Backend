@@ -9,6 +9,7 @@
   "/api/auth/logout/route": "/api/auth/logout",
   "/api/auth/me/route": "/api/auth/me",
   "/api/auth/register/route": "/api/auth/register",
+  "/api/auth/register/send-otp/route": "/api/auth/register/send-otp",
   "/api/auth/reset-password/route": "/api/auth/reset-password",
   "/api/conversations/[id]/call/route": "/api/conversations/[id]/call",
   "/api/conversations/[id]/route": "/api/conversations/[id]",

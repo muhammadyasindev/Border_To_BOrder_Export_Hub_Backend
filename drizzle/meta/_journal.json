@@ -8,6 +8,13 @@
       "when": 1791741749707,
       "tag": "0000_smart_lady_ursula",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791878809871,
+      "tag": "0001_slow_obadiah_stane",
+      "breakpoints": true
     }
   ]
 }

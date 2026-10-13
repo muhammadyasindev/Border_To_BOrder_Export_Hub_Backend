@@ -14,9 +14,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-    const [user] = await db.select().from(users).where(eq(users.email, email.toLowerCase().trim())).limit(1);
+    const identifier = (email || "").trim();
+    let [user] = await db.select().from(users).where(eq(users.email, identifier.toLowerCase())).limit(1);
     if (!user) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+      [user] = await db.select().from(users).where(eq(users.fullName, identifier)).limit(1);
+    }
+    if (!user) {
+      return NextResponse.json({ error: "Invalid email/username or password" }, { status: 401 });
     }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);

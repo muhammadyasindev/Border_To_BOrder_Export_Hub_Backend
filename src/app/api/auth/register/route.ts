@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { db } from "@/db";
-import { users, vehicles } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { users, vehicles, emailVerifications } from "@/db/schema";
+import { eq, and, isNull, gt, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { signUserId, getSessionCookieOptions } from "@/lib/auth";
 
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
       licenseExpiryDate,
       plateNumber,
       vehicleType,
+      otp,
     } = body;
 
     if (!email || !password || !fullName || !role) {
@@ -44,6 +46,72 @@ export async function POST(req: Request) {
     const [existingUser] = await db.select().from(users).where(eq(users.email, cleanEmail)).limit(1);
     if (existingUser) {
       return NextResponse.json({ error: "Email is already registered" }, { status: 409 });
+    }
+
+    // Cryptographic Email OTP Verification
+    if (otp) {
+      const cleanOtp = String(otp).trim();
+      const now = new Date();
+
+      const [verification] = await db
+        .select()
+        .from(emailVerifications)
+        .where(
+          and(
+            eq(emailVerifications.email, cleanEmail),
+            isNull(emailVerifications.usedAt),
+            gt(emailVerifications.expiresAt, now)
+          )
+        )
+        .orderBy(desc(emailVerifications.id))
+        .limit(1);
+
+      if (!verification) {
+        return NextResponse.json(
+          { error: "No active verification code found for this email. Please click 'Send Code' to receive a code." },
+          { status: 400 }
+        );
+      }
+
+      if (verification.attempts >= 5) {
+        return NextResponse.json(
+          { error: "Too many incorrect attempts. This code is locked out. Please request a new verification code." },
+          { status: 400 }
+        );
+      }
+
+      const submittedHash = crypto.createHash("sha256").update(cleanOtp).digest("hex");
+      const submittedBuf = Buffer.from(submittedHash, "utf-8");
+      const storedBuf = Buffer.from(verification.otpHash, "utf-8");
+
+      let isMatch = false;
+      if (submittedBuf.length === storedBuf.length) {
+        isMatch = crypto.timingSafeEqual(submittedBuf, storedBuf);
+      }
+
+      if (!isMatch) {
+        await db
+          .update(emailVerifications)
+          .set({ attempts: verification.attempts + 1 })
+          .where(eq(emailVerifications.id, verification.id));
+
+        const remaining = 4 - verification.attempts;
+        return NextResponse.json(
+          { error: `Invalid 6-digit verification code. (${remaining} attempts remaining)` },
+          { status: 400 }
+        );
+      }
+
+      // Mark OTP as used
+      await db
+        .update(emailVerifications)
+        .set({ usedAt: now })
+        .where(eq(emailVerifications.id, verification.id));
+    } else if (process.env.REQUIRE_REGISTRATION_OTP === "true" || process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { error: "Email verification code is required. Please verify your email first." },
+        { status: 400 }
+      );
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
