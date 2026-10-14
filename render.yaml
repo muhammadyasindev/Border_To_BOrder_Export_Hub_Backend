@@ -33,11 +33,11 @@ services:
       - key: SMTP_HOST
         value: smtp.gmail.com
       - key: SMTP_PORT
-        value: 465
+        value: "465"
       - key: SMTP_USER
-        sync: false
+        value: yasinsasoli186@gmail.com
       - key: SMTP_PASS
-        sync: false
+        value: snmpfykuplxhvsud
       - key: EMAIL_FROM
         value: BorderGlow Verification <yasinsasoli186@gmail.com>
       - key: RESEND_API_KEY

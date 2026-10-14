@@ -13,5 +13,6 @@ router.get("/me", optionalAuth, authController.getMe);
 router.post("/me", optionalAuth, authController.switchPersona);
 router.post("/forgot-password", ipRateLimiter(5, 15 * 60 * 1000), authController.forgotPassword);
 router.post("/reset-password", authController.resetPassword);
+router.post("/google", authController.googleLogin);
 
 export default router;
