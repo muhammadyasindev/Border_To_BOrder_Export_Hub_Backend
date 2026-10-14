@@ -39,7 +39,7 @@ services:
       - key: SMTP_PASS
         value: snmpfykuplxhvsud
       - key: EMAIL_FROM
-        value: BorderGlow Verification <yasinsasoli186@gmail.com>
+        value: Border Export Hub Verification <yasinsasoli186@gmail.com>
       - key: RESEND_API_KEY
         sync: false
       - key: ALLOW_PRODUCTION_SEED

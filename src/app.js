@@ -23,6 +23,7 @@ import attachmentRoutes from "./routes/attachmentRoutes.js";
 import webrtcRoutes from "./routes/webrtcRoutes.js";
 import seedRoutes from "./routes/seedRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 const app = express();
 
@@ -65,7 +66,7 @@ app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
-    service: "BorderGlow Express API Engine",
+    service: "Border Export Hub Express API Engine",
     version: "2.0.0",
     healthCheck: "/api/health",
     frontendUrl: env.FRONTEND_URL,
@@ -78,7 +79,7 @@ app.get("/", (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    service: "BorderGlow Express API Engine",
+    service: "Border Export Hub Express API Engine",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   });
@@ -102,6 +103,7 @@ app.use("/api/attachments", attachmentRoutes);
 app.use("/api/webrtc", webrtcRoutes);
 app.use("/api/seed", seedRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Centralized error handler
 app.use(errorHandler);

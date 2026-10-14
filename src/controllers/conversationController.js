@@ -857,7 +857,18 @@ export async function getCallSession(req, res, next) {
       return res.status(403).json({ error: "Access denied" });
     }
 
-    const session = activeCallSessions.get(String(id));
+    const convKey = String(id);
+    let session = activeCallSessions.get(convKey);
+
+    if (session) {
+      // Auto-timeout after 45 seconds if nobody answers
+      if (session.status === "ringing" && Date.now() - session.startedAt > 45000) {
+        session.status = "timeout";
+        session.endedAt = Date.now();
+        setTimeout(() => activeCallSessions.delete(convKey), 4000);
+      }
+    }
+
     res.json({
       call: session || { status: "idle", conversationId: id },
     });
@@ -866,7 +877,7 @@ export async function getCallSession(req, res, next) {
   }
 }
 
-// 10. Handle WebRTC Call Actions (Initiate, Answer, Candidate, End/Reject)
+// 10. Handle WebRTC Call Actions (Initiate, Answer, Candidate, End/Reject/Cancel)
 export async function handleCallAction(req, res, next) {
   try {
     const { id } = req.params;
@@ -880,18 +891,50 @@ export async function handleCallAction(req, res, next) {
     let session = activeCallSessions.get(convKey);
 
     if (action === "initiate") {
+      // Resolve other participant in this conversation
+      const participants = await ConversationParticipant.find({ conversationId: id }).populate(
+        "userId",
+        "fullName businessName role avatarUrl"
+      );
+      const otherPart = participants.find(
+        (p) => String(p.userId?._id || p.userId) !== String(req.user._id)
+      );
+      const recipientId = otherPart ? String(otherPart.userId?._id || otherPart.userId) : null;
+      const recipientName = otherPart?.userId?.fullName || "Trade Counterparty";
+      const conversation = await Conversation.findById(id).select("title");
+
       session = {
-        conversationId: id,
+        callId: "call_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8),
+        conversationId: String(id),
+        conversationTitle: conversation?.title || "Deal Room",
         callType: callType || "voice",
         status: "ringing",
-        callerId: req.user._id,
+        callerId: String(req.user._id),
         callerName: req.user.fullName || "Trade Partner",
         callerRole: req.user.role,
+        callerAvatar: req.user.avatarUrl || null,
+        recipientId,
+        recipientName,
         offerSdp: offerSdp || null,
+        answerSdp: null,
         iceCandidates: [],
         startedAt: Date.now(),
+        connectedAt: null,
+        endedAt: null,
       };
+
       activeCallSessions.set(convKey, session);
+
+      // Auto-cancel if unacknowledged after 45 seconds
+      setTimeout(() => {
+        const current = activeCallSessions.get(convKey);
+        if (current && current.callId === session.callId && current.status === "ringing") {
+          current.status = "timeout";
+          current.endedAt = Date.now();
+          setTimeout(() => activeCallSessions.delete(convKey), 4000);
+        }
+      }, 46000);
+
       return res.json({ success: true, call: session });
     }
 
@@ -913,13 +956,14 @@ export async function handleCallAction(req, res, next) {
       if (candidate) {
         session.iceCandidates.push({
           candidate,
-          senderId: req.user._id,
+          senderId: String(req.user._id),
+          timestamp: Date.now(),
         });
       }
-      return res.json({ success: true });
+      return res.json({ success: true, candidateCount: session.iceCandidates.length });
     }
 
-    if (action === "reject" || action === "end") {
+    if (action === "reject" || action === "cancel" || action === "end") {
       if (session) {
         const durationSec = session.connectedAt
           ? Math.round((Date.now() - session.connectedAt) / 1000)
@@ -928,13 +972,18 @@ export async function handleCallAction(req, res, next) {
         const callLabel = session.callType === "video" ? "Video Call" : "Voice Call";
         const mins = Math.floor(durationSec / 60);
         const secs = durationSec % 60;
-        const durationStr = durationSec > 0 ? `${mins}m ${secs}s` : "missed / cancelled";
+        const durationStr = durationSec > 0 ? `${mins}m ${secs}s` : action === "reject" ? "declined" : "missed / cancelled";
+
+        let logContent = `${callIcon} ${callLabel} `;
+        if (action === "reject") logContent += `Declined (${durationStr})`;
+        else if (action === "cancel") logContent += `Cancelled (${durationStr})`;
+        else logContent += `Ended (${durationStr})`;
 
         await Message.create({
           conversationId: id,
           senderId: req.user._id,
           senderRole: req.user.role,
-          content: `${callIcon} ${callLabel} ${action === "reject" ? "Declined" : "Ended"} (${durationStr})`,
+          content: logContent,
         });
 
         session.status = action === "reject" ? "rejected" : "ended";
@@ -952,3 +1001,27 @@ export async function handleCallAction(req, res, next) {
     next(err);
   }
 }
+
+// 11. Check for incoming calls across all conversations for current user
+export async function getIncomingCallForUser(req, res, next) {
+  try {
+    const currentUserId = String(req.user._id);
+    let incoming = null;
+
+    for (const session of activeCallSessions.values()) {
+      if (
+        session.recipientId === currentUserId &&
+        session.status === "ringing" &&
+        Date.now() - session.startedAt < 45000
+      ) {
+        incoming = session;
+        break;
+      }
+    }
+
+    res.json({ success: true, incomingCall: incoming });
+  } catch (err) {
+    next(err);
+  }
+}
+

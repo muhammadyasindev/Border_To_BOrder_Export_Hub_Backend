@@ -10,6 +10,7 @@ import {
   updateConversation,
   getCallSession,
   handleCallAction,
+  getIncomingCallForUser,
 } from "../controllers/conversationController.js";
 import { requireAuth, optionalAuth } from "../middleware/authMiddleware.js";
 
@@ -18,6 +19,7 @@ const router = express.Router();
 router.get("/", optionalAuth, getConversations);
 
 router.use(requireAuth);
+router.get("/active-calls/incoming", getIncomingCallForUser);
 router.post("/", createConversation);
 router.get("/:id", getConversationById);
 router.patch("/:id", updateConversation);

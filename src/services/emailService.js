@@ -40,7 +40,7 @@ export async function sendEmail({ to, subject, text, html }) {
       const transporter = getTransporter();
 
       await transporter.sendMail({
-        from: env.EMAIL_FROM || `BorderGlow Verification <${user}>`,
+        from: env.EMAIL_FROM || `Border Export Hub Verification <${user}>`,
         to: cleanTo,
         subject,
         text,
@@ -61,7 +61,7 @@ export async function sendEmail({ to, subject, text, html }) {
       const resendFrom =
         env.EMAIL_FROM && !env.EMAIL_FROM.toLowerCase().includes("@gmail.com")
           ? env.EMAIL_FROM
-          : "BorderGlow Verification <onboarding@resend.dev>";
+          : "Border Export Hub Verification <onboarding@resend.dev>";
 
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",

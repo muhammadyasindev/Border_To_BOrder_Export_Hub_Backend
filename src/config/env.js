@@ -19,7 +19,7 @@ export const env = {
   SMTP_SECURE: process.env.SMTP_SECURE === "true" || process.env.SMTP_PORT === "465" || !process.env.SMTP_PORT,
   SMTP_USER: process.env.SMTP_USER || "yasinsasoli186@gmail.com",
   SMTP_PASS: (process.env.SMTP_PASS || "snmpfykuplxhvsud").replace(/\s+/g, ""),
-  EMAIL_FROM: process.env.EMAIL_FROM || "BorderGlow Verification <yasinsasoli186@gmail.com>",
+  EMAIL_FROM: process.env.EMAIL_FROM || "Border Export Hub Verification <yasinsasoli186@gmail.com>",
   RESEND_API_KEY: process.env.RESEND_API_KEY || "",
   ATTACHMENT_STORAGE_DIR: process.env.ATTACHMENT_STORAGE_DIR || path.resolve(process.cwd(), "data", "attachments"),
   ENABLE_DEV_PERSONA_SWITCH: process.env.ENABLE_DEV_PERSONA_SWITCH === "true",

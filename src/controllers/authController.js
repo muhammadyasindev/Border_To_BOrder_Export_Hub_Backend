@@ -51,11 +51,11 @@ async function sendRegistrationOtp(req, res, next) {
 
     sendEmail({
       to: cleanEmail,
-      subject: "BorderGlow Registration Verification Code",
-      text: `Your BorderGlow registration verification code is: ${otp}\n\nThis single-use code expires in 15 minutes.`,
+      subject: "Border Export Hub Registration Verification Code",
+      text: `Your Border Export Hub registration verification code is: ${otp}\n\nThis single-use code expires in 15 minutes.`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
-          <h2 style="color: #0f172a; margin-bottom: 8px;">BorderGlow Email Verification</h2>
+          <h2 style="color: #0f172a; margin-bottom: 8px;">Border Export Hub Email Verification</h2>
           <p style="color: #475569; font-size: 14px;">Enter the following single-use verification code to activate your trade account:</p>
           <div style="background: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center; margin: 20px 0;">
             <span style="font-size: 28px; font-weight: bold; letter-spacing: 6px; font-family: monospace; color: #0284c7;">${otp}</span>
@@ -281,11 +281,11 @@ async function forgotPassword(req, res, next) {
     // Dispatch email asynchronously so HTTP response returns in <50ms without hanging
     sendEmail({
       to: cleanEmail,
-      subject: "BorderGlow Password Reset Code",
+      subject: "Border Export Hub Password Reset Code",
       text: `Your password recovery verification code is: ${otp}\n\nExpires in 15 minutes.`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
-          <h2 style="color: #0f172a; margin-bottom: 8px;">BorderGlow Password Reset</h2>
+          <h2 style="color: #0f172a; margin-bottom: 8px;">Border Export Hub Password Reset</h2>
           <p style="color: #475569; font-size: 14px;">Enter the following single-use verification code to reset your account password:</p>
           <div style="background: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center; margin: 20px 0;">
             <span style="font-size: 28px; font-weight: bold; letter-spacing: 6px; font-family: monospace; color: #dc2626;">${otp}</span>
