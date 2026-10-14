@@ -22,6 +22,21 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    messageType: {
+      type: String,
+      enum: ["chat", "quotation", "counteroffer", "acceptance", "confirmation", "rejection", "deal_status_change"],
+      default: "chat",
+      index: true,
+    },
+    proposalData: {
+      price: Number,
+      quantity: Number,
+      currency: String,
+      route: String,
+      deliveryDate: String,
+      paymentTerms: String,
+      action: String,
+    },
     attachmentName: {
       type: String,
       default: null,

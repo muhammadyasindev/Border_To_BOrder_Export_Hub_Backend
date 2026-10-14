@@ -16,7 +16,6 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ["Agricultural", "Textiles", "Minerals", "Dry Fruits", "Chemicals", "Construction", "Machinery", "Chemicals & Minerals"],
       index: true,
     },
     description: {
@@ -58,9 +57,30 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    destinationCorridors: {
+      type: mongoose.Schema.Types.Mixed,
+      default: "Pakistan, Iran, Afghanistan, China",
+    },
+    minOrderQuantity: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
+    deliveryTerms: {
+      type: String,
+      default: "FOB / Border Zero-Point",
+    },
+    availability: {
+      type: String,
+      default: "In Stock / Ready for Dispatch",
+    },
     imageUrl: {
       type: String,
       default: null,
+    },
+    images: {
+      type: [String],
+      default: [],
     },
     status: {
       type: String,

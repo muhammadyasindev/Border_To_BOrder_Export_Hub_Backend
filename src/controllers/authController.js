@@ -160,7 +160,7 @@ async function register(req, res, next) {
 // 3. Login
 async function login(req, res, next) {
   try {
-    const { email, password } = req.body;
+    const { email, password, role, fullName } = req.body;
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
@@ -176,6 +176,15 @@ async function login(req, res, next) {
     if (!valid) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
+
+    // Update role if selected during login
+    if (role && ["exporter", "importer", "driver", "admin"].includes(role.toLowerCase())) {
+      user.role = role.toLowerCase();
+    }
+    if (fullName && (!user.fullName || user.fullName === "Trader")) {
+      user.fullName = fullName.trim();
+    }
+    await user.save();
 
     const token = setSessionCookie(res, user._id.toString());
     res.json({ success: true, user, token });
@@ -388,6 +397,25 @@ async function googleLogin(req, res, next) {
   }
 }
 
+// 6b. Switch Role (Trader workspace role toggle)
+async function switchRole(req, res, next) {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized. Please sign in." });
+    }
+    const { role } = req.body;
+    if (!role || !["exporter", "importer", "driver"].includes(role.toLowerCase())) {
+      return res.status(400).json({ error: "Valid role is required (exporter, importer, driver)" });
+    }
+    user.role = role.toLowerCase();
+    await user.save();
+    return res.json({ success: true, user });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export {
   sendRegistrationOtp,
   register,
@@ -395,6 +423,7 @@ export {
   logout,
   getMe,
   switchPersona,
+  switchRole,
   forgotPassword,
   resetPassword,
   googleLogin,

@@ -3,6 +3,9 @@ import crypto from "crypto";
 
 export async function getShipments(req, res, next) {
   try {
+    if (!req.user) {
+      return res.json([]);
+    }
     const userId = req.user._id;
     const filter = {
       $or: [{ exporterId: userId }, { buyerId: userId }, { driverId: userId }],

@@ -22,6 +22,7 @@ import profileRoutes from "./routes/profileRoutes.js";
 import attachmentRoutes from "./routes/attachmentRoutes.js";
 import webrtcRoutes from "./routes/webrtcRoutes.js";
 import seedRoutes from "./routes/seedRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 const app = express();
 
@@ -100,6 +101,7 @@ app.use("/api/profiles", profileRoutes);
 app.use("/api/attachments", attachmentRoutes);
 app.use("/api/webrtc", webrtcRoutes);
 app.use("/api/seed", seedRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Centralized error handler
 app.use(errorHandler);

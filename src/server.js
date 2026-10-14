@@ -9,8 +9,8 @@ async function startServer() {
   // Connect to database
   await connectDB();
 
-  // In development, auto-seed if empty
-  if (env.NODE_ENV !== "production") {
+  // Auto-seed only if explicitly requested
+  if (process.env.AUTO_SEED === "true") {
     try {
       await seedDatabase();
     } catch (e) {

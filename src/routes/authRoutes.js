@@ -11,6 +11,7 @@ router.post("/login", authController.login);
 router.post("/logout", authController.logout);
 router.get("/me", optionalAuth, authController.getMe);
 router.post("/me", optionalAuth, authController.switchPersona);
+router.post("/switch-role", optionalAuth, authController.switchRole);
 router.post("/forgot-password", ipRateLimiter(5, 15 * 60 * 1000), authController.forgotPassword);
 router.post("/reset-password", authController.resetPassword);
 router.post("/google", authController.googleLogin);

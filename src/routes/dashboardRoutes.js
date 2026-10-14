@@ -1,9 +1,9 @@
 import express from "express";
 import { getDashboardSummary } from "../controllers/dashboardController.js";
-import { requireAuth } from "../middleware/authMiddleware.js";
+import { optionalAuth } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/summary", requireAuth, getDashboardSummary);
+router.get("/summary", optionalAuth, getDashboardSummary);
 
 export default router;

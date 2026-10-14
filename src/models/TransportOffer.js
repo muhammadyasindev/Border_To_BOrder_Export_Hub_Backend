@@ -32,6 +32,34 @@ const transportOfferSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    vehicleType: {
+      type: String,
+      default: "Heavy Articulated Truck (6x4)",
+    },
+    vehicleCapacity: {
+      type: Number,
+      default: 40,
+    },
+    currentLocation: {
+      type: String,
+      default: "",
+    },
+    pricingBasis: {
+      type: String,
+      default: "Per Trip",
+    },
+    availabilityDates: {
+      type: String,
+      default: "Immediate",
+    },
+    estimatedDeliveryTime: {
+      type: String,
+      default: "24-48 Hours",
+    },
+    transportConditions: {
+      type: String,
+      default: "",
+    },
     cargoCategory: {
       type: String,
       required: true,
@@ -55,7 +83,7 @@ const transportOfferSchema = new mongoose.Schema(
     status: {
       type: String,
       default: "active",
-      enum: ["active", "booked", "paused"],
+      enum: ["active", "booked", "paused", "withdrawn"],
       index: true,
     },
     specialConditions: {

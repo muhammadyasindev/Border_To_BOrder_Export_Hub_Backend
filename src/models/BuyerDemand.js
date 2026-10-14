@@ -57,14 +57,26 @@ const buyerDemandSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    requiredDeliveryDate: {
+      type: Date,
+      default: null,
+    },
+    preferredCorridor: {
+      type: String,
+      default: "",
+    },
     packagingRequirements: {
       type: String,
       default: null,
     },
+    additionalRequirements: {
+      type: String,
+      default: "",
+    },
     status: {
       type: String,
       required: true,
-      enum: ["active", "fulfilled", "closed"],
+      enum: ["active", "paused", "fulfilled", "closed"],
       default: "active",
       index: true,
     },

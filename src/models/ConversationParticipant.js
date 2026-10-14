@@ -17,7 +17,7 @@ const conversationParticipantSchema = new mongoose.Schema(
     roleInDeal: {
       type: String,
       required: true,
-      enum: ["exporter", "buyer", "transporter", "admin"],
+      enum: ["exporter", "importer", "buyer", "seller", "transporter", "driver", "admin"],
     },
     joinedAt: {
       type: Date,
